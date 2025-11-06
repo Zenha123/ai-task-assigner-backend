@@ -27,22 +27,11 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         result = run_assignment_pipeline(task.id)
 
-        try:
-            output = result.get("output", {})
-        except Exception as e:
-            output = {
-                "recommended_assignee": None,
-                "confidence_score": 0.0,
-                "reasoning": str(e),
-                "confidence_breakdown": [],
-                "email_sent": False  # Add this
-            }
-
-        assigned_to = task.assigned_to.name if task.assigned_to else output.get("recommended_assignee")
-        confidence = task.confidence_score or output.get("confidence_score", 0.0)
-        reason = output.get("reasoning", "No reasoning provided")
-        breakdown = output.get("confidence_breakdown", [])
-        email_sent = output.get("email_sent", False)  # Add this
+        assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
+        confidence = task.confidence_score or result.get("confidence_score", 0.0)
+        reason = result.get("reasoning", "No reasoning provided")
+        breakdown = result.get("confidence_breakdown", [])
+        email_sent = result.get("email_sent", False)  # Add this
         
         return Response({
             "id": task.id,
