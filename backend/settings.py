@@ -1,15 +1,11 @@
 from pathlib import Path
-import environ
+from decouple import config
 import os
 from datetime import timedelta
 
-env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-
 
 SECRET_KEY = 'django-insecure-8%nwg5did=_-(bz#ow8qgn848ouzws0n5cn=wd4**rbso$52^^'
-
 
 DEBUG = True
 
@@ -46,25 +42,25 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Email config
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+EMAIL_BACKEND = config("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = config("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(config("EMAIL_PORT", 587))
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 # Controls
-ENABLE_EMAIL_NOTIFICATIONS = os.getenv("ENABLE_EMAIL_NOTIFICATIONS", "true") == "true"
-USE_CELERY_FOR_EMAIL = os.getenv("USE_CELERY_FOR_EMAIL", "false") == "true"
+ENABLE_EMAIL_NOTIFICATIONS = config("ENABLE_EMAIL_NOTIFICATIONS", "true") == "true"
+USE_CELERY_FOR_EMAIL = config("USE_CELERY_FOR_EMAIL", "false") == "true"
 
 # Slack
-SLACK_SIGNING_SECRET = env("SLACK_SIGNING_SECRET", default="")
-SLACK_BOT_TOKEN = env("SLACK_BOT_TOKEN", default="")
+SLACK_SIGNING_SECRET = config("SLACK_SIGNING_SECRET", default="")
+SLACK_BOT_TOKEN = config("SLACK_BOT_TOKEN", default="")
 
-# LLM provider keys available from env
-OPENAI_API_KEY = env("OPENAI_API_KEY", default=None)
-ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default=None)
+# LLM provider keys available from config
+OPENAI_API_KEY = config("OPENAI_API_KEY", default=None)
+ANTHROPIC_API_KEY = config("ANTHROPIC_API_KEY", default=None)
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -116,11 +112,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("POSTGRES_DB"),
-        "USER": env("POSTGRES_USER"),
-        "PASSWORD": env("POSTGRES_PASSWORD"),
-        "HOST": env("POSTGRES_HOST"),
-        "PORT": env("POSTGRES_PORT"),
+        "NAME": config("POSTGRES_DB"),
+        "USER": config("POSTGRES_USER"),
+        "PASSWORD": config("POSTGRES_PASSWORD"),
+        "HOST": config("POSTGRES_HOST"),
+        "PORT": config("POSTGRES_PORT"),
     }
 }
 
