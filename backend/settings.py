@@ -14,17 +14,12 @@ ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
-
 SECRET_KEY = 'django-insecure-8%nwg5did=_-(bz#ow8qgn848ouzws0n5cn=wd4**rbso$52^^'
 
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ["*"]
 
 
 INSTALLED_APPS = [
@@ -94,6 +89,7 @@ ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default=None)
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
