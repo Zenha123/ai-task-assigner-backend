@@ -1,3 +1,4 @@
+# backend/Dockerfile
 # Use official Python runtime as base image
 FROM python:3.11-slim
 
@@ -7,7 +8,9 @@ ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Set work directory
-WORKDIR /app
+WORKDIR /app/backend
+
+COPY . /app/
 
 # Upgrade pip
 RUN pip install --upgrade pip
