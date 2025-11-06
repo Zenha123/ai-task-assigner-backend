@@ -7,12 +7,6 @@ env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(",")
-
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-8%nwg5did=_-(bz#ow8qgn848ouzws0n5cn=wd4**rbso$52^^'
 
@@ -32,19 +26,8 @@ INSTALLED_APPS = [
     'corsheaders',
     "rest_framework",
     "drf_spectacular",
-    # "assignments",
-
     "assignments.apps.AssignmentsConfig",
 ]
-
-# REST_FRAMEWORK = {
-#     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-#     "DEFAULT_AUTHENTICATION_CLASSES": (
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",
-#     ),
-#     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-# }
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -55,7 +38,6 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
-
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "AI Task Assignment API",
@@ -75,8 +57,6 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 # Controls
 ENABLE_EMAIL_NOTIFICATIONS = os.getenv("ENABLE_EMAIL_NOTIFICATIONS", "true") == "true"
 USE_CELERY_FOR_EMAIL = os.getenv("USE_CELERY_FOR_EMAIL", "false") == "true"
-
-
 
 # Slack
 SLACK_SIGNING_SECRET = env("SLACK_SIGNING_SECRET", default="")
@@ -182,7 +162,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "ALGORITHM": "HS256",
-    # ... other settings optional
 }
 
 SPECTACULAR_SETTINGS = {
