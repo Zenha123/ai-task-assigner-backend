@@ -25,7 +25,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
 
-        result = run_assignment_pipeline.delay(task.id)
+        result = run_assignment_pipeline(task.id)
 
         try:
             output = result.get(timeout=50)

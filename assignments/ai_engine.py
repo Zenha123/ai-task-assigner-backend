@@ -4,11 +4,9 @@ import os
 import json
 import logging
 from typing import Dict, Any, List
-from celery import shared_task
 from django.conf import settings
 from .models import Task, Employee, AssignmentLog
 
-# ✅ Correct imports for modern LangChain + LangGraph
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph
@@ -220,7 +218,6 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
     }
 
 
-@shared_task
 def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
     """
     End-to-end reasoning pipeline that mimics LangGraph execution flow,
