@@ -1,0 +1,24 @@
+Hello {{ assignee_name }},
+
+You have been assigned a new task.
+
+Title: {{ task_title }}
+Description: {{ task_description }}
+Confidence: {{ confidence_score }}
+
+Assigned by: {{ assigned_by }}
+Assigned at: {{ assigned_at }}
+
+{% if task_url %}
+View task: {{ task_url }}
+{% endif %}
+
+{% if summary_lines %}
+Summary:
+{% for line in summary_lines %}
+ - {{ line }}
+{% endfor %}
+{% endif %}
+
+Best,
+AI Task Assignment System

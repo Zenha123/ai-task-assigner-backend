@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Dhruv Sharma",
+    "email": "fathimazenha21@gmail.com",
+    "role": "Backend Engineer",
+    "skills": ["Python", "Django", "REST API", "PostgreSQL", "Azure Blob"],
+    "responsibilities": "Develops backend APIs, integrates storage, and manages database models",
+    "workload_score": 0.3
+  },
+  {
+    "name": "Aisha Patel",
+    "email": "aisha@example.com",
+    "role": "Frontend Developer",
+    "skills": ["React", "TailwindCSS", "UI/UX", "JavaScript"],
+    "responsibilities": "Builds and maintains responsive user interfaces and integrates APIs",
+    "workload_score": 0.4
+  },
+  {
+    "name": "Ravi Nair",
+    "email": "ravi@example.com",
+    "role": "Machine Learning Engineer",
+    "skills": ["Python", "TensorFlow", "LangChain", "AI Reasoning"],
+    "responsibilities": "Builds AI reasoning workflows and integrates LangGraph models",
+    "workload_score": 0.6
+  },
+  {
+    "name": "Simran Kaur",
+    "email": "simran@example.com",
+    "role": "DevOps Engineer",
+    "skills": ["Docker", "Kubernetes", "CI/CD", "AWS", "Monitoring"],
+    "responsibilities": "Manages deployment pipelines and server reliability",
+    "workload_score": 0.5
+  },
+  {
+    "name": "Arjun Mehta",
+    "email": "arjun@example.com",
+    "role": "Project Manager",
+    "skills": ["Scrum", "Agile", "Jira", "Leadership"],
+    "responsibilities": "Oversees project execution and task allocation",
+    "workload_score": 0.2
+  }
+]
