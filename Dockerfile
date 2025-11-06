@@ -1,31 +1,38 @@
 # Use official Python runtime as base image
 FROM python:3.11-slim
 
-# Prevent Python from writing .pyc files and buffer logs
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Set working directory
+# Set work directory
 WORKDIR /app
 
-# Copy and install dependencies first (better build caching)
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# Copy the entire project into the container
+# Copy requirements file
+COPY requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
 COPY . /app/
 
-# Change working directory to the Django project folder
-WORKDIR /app/backend
+# Create directory for media files
+RUN mkdir -p /app/media /app/staticfiles
 
-# Expose port for Gunicorn
-EXPOSE 8009
+# Collect static files (with fallback if it fails)
+RUN python manage.py collectstatic --noinput --clear
 
-# Run Gunicorn (optimized settings)
+# Expose port 8000
+EXPOSE 8000
+
+# Run gunicorn with optimized settings for large file processing
 CMD gunicorn backend.wsgi:application \
-    --bind 0.0.0.0:8009 \
+    --bind 0.0.0.0:$PORT \
     --workers 2 \
     --threads 4 \
     --worker-class gthread \
@@ -36,4 +43,4 @@ CMD gunicorn backend.wsgi:application \
     --max-requests-jitter 50 \
     --access-logfile - \
     --error-logfile - \
-    --log-level info
+    --log-level info                                         
