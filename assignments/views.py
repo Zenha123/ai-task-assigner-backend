@@ -28,7 +28,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         result = run_assignment_pipeline(task.id)
 
         try:
-            output = result.get(timeout=50)
+            output = result.get("output", {})
         except Exception as e:
             output = {
                 "recommended_assignee": None,
