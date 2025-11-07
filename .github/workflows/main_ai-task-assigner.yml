@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'Ai-task-assigner'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1176B92149DA48CAB212F2474DDCA2D0 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_085D6E82D5D04E76A93D60C2D590A0B3 }}
