@@ -73,9 +73,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "https://ai-task-assigner-frontend.vercel.app",
     "https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net",
+    "https://ai-task-assigner-frontend.vercel.app",
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -139,9 +139,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "static"
+# STATIC_URL = "static/"
+# STATIC_ROOT = BASE_DIR / "static"
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
