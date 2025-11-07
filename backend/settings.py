@@ -74,7 +74,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://ai-task-assigner-frontend.vercel.app/",
+    "https://ai-task-assigner-frontend.vercel.app",
     "https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net",
 ]
 
