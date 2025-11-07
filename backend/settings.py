@@ -232,3 +232,21 @@ CELERY_TIMEZONE = "Asia/Kolkata"
 
 # CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": "CERT_NONE"}
 # CELERY_REDIS_BACKEND_USE_SSL = {"ssl_cert_reqs": "CERT_NONE"}
+
+
+
+ALLOWED_HOSTS = [
+    'ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+DEBUG = False
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+####
