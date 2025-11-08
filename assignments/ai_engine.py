@@ -10,6 +10,7 @@ from .models import Task, Employee, AssignmentLog
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph
+from celery import shared_task
 
 logger = logging.getLogger(__name__)
 
@@ -218,6 +219,7 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
     }
 
 
+@shared_task
 def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
     """
     End-to-end reasoning pipeline that mimics LangGraph execution flow,
