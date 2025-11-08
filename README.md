@@ -18,8 +18,8 @@ It integrates **LangGraph, OpenAI, and Celery** to build an intelligent, asynchr
 - 🔄 Real-time task updates via REST API  
 - 🧩 Built with Django, React, LangGraph, Celery, and PostgreSQL  
 - 🐳 Full Docker support for backend, frontend, Redis, and worker  
+- 🌐 Hosted Backend on Azure & Frontend on Vercel
 
----
 
 ## 🛠️ Tech Stack
 
@@ -34,6 +34,32 @@ It integrates **LangGraph, OpenAI, and Celery** to build an intelligent, asynchr
 | Email Notification     | SMTP (localhost)                              |
 
 ---
+## Access After Build:
+
+-Frontend: http://localhost:5173
+
+-Backend API: http://localhost:8000/api
+
+-Admin Panel: http://localhost:8000/admin
+
+⚛️ Frontend UI Overview
+
+💬 AI Chat Interface – Describe tasks in plain English
+
+🧑‍💻 Dashboard – Displays tasks, assigned employee, confidence, and status
+
+📧 Assignment Notifications – Sent automatically via SMTP
+
+🌐 Hosting
+
+Backend (Azure): https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net/api/
+
+Frontend (Vercel): https://ai-task-assigner-frontend.vercel.app/
+
+Database:
+
+Worker: Celery + Redis (Dockerized on Azure or local)
+
 
 ## ⚙️ Core Modules Overview
 
