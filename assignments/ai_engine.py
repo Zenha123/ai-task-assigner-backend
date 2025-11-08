@@ -1,5 +1,4 @@
 
-
 import os
 import json
 import logging
@@ -10,7 +9,7 @@ from .models import Task, Employee, AssignmentLog
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph
-
+from celery import shared_task
 logger = logging.getLogger(__name__)
 
 
@@ -25,6 +24,8 @@ def get_llm():
 
 
 # ---------- Pipeline Nodes ----------
+# 
+import re
 
 def task_parser_node(task: Task) -> Dict[str, Any]:
     """Extract candidate skills/keywords from the task title & description."""
@@ -217,6 +218,8 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
         "email_sent": email_sent  # Add this to return value
     }
 
+
+@shared_task
 def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
     """
     End-to-end reasoning pipeline that mimics LangGraph execution flow,
@@ -276,4 +279,7 @@ def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
 
     logger.info(f"Final Assignment result: {result}")
     return result
+
+
+
 

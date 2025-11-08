@@ -25,7 +25,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
 
-        result = run_assignment_pipeline(task.id)
+        result = run_assignment_pipeline.delay(task.id)
 
         assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
         confidence = task.confidence_score or result.get("confidence_score", 0.0)
@@ -42,6 +42,10 @@ class TaskViewSet(viewsets.ModelViewSet):
             "confidence_breakdown": breakdown,
             "email_sent": email_sent,  # Add this
         }, status=status.HTTP_201_CREATED)
+
+
+
+    
 
     @action(detail=True, methods=["post"])
     def manual_assign(self, request, pk=None):
