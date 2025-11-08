@@ -218,12 +218,14 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
         "email_sent": email_sent  # Add this to return value
     }
 
+
 @shared_task
 def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
     """
     End-to-end reasoning pipeline that mimics LangGraph execution flow,
     with confidence breakdown for frontend display.
     """
+    message = task_id        
     task = Task.objects.get(pk=task_id)
     logger.info(f"🔹 Running AI assignment pipeline for Task ID={task.id}")
 
@@ -278,174 +280,3 @@ def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
 
     logger.info(f"Final Assignment result: {result}")
     return result
-
-
-
-
-
-def handle_chat_message(message: str) -> dict:
-    """
-    Handle conversational messages including greetings, questions, and task requests.
-    Returns appropriate response based on message type.
-    """
-    if not message or not message.strip():
-        return {
-            "type": "error",
-            "response": "I didn't receive any message. How can I help you?"
-        }
-   
-    msg_lower = message.lower().strip()
-   
-    # --- Handle Greetings ---
-    greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "greetings", "howdy"]
-    if any(msg_lower.startswith(greeting) or msg_lower == greeting for greeting in greetings):
-        return {
-            "type": "greeting",
-            "response": "👋 Hello! I'm your AI Task Assignment Assistant. I can help you with:\n\n"
-                       "• Creating and assigning tasks to team members\n"
-                       "• Analyzing team workload and availability\n"
-                       "• Providing assignment recommendations\n"
-                       "• Checking task status and history\n\n"
-                       "What would you like to do today?"
-        }
-   
-    # --- Handle Help Requests ---
-    help_keywords = ["help", "what can you do", "capabilities", "commands", "how to", "guide"]
-    if any(keyword in msg_lower for keyword in help_keywords):
-        return {
-            "type": "help",
-            "response": "🤖 **Here's what I can do:**\n\n"
-                       "**Task Management:**\n"
-                       "• Create tasks - I'll automatically analyze and assign them\n"
-                       "• Review assignment confidence scores\n"
-                       "• Check task status and history\n\n"
-                       "**Team Intelligence:**\n"
-                       "• Analyze employee skills and workload\n"
-                       "• Recommend best assignees for tasks\n"
-                       "• Balance team workload\n\n"
-                       "**My AI Pipeline:**\n"
-                       "1. Parse task requirements\n"
-                       "2. Match with employee skills\n"
-                       "3. Analyze workload\n"
-                       "4. Calculate confidence scores\n"
-                       "5. Auto-assign or recommend\n\n"
-                       "Just create a task or ask me anything!"
-        }
-   
-    # --- Handle Task/Assignment Status Queries ---
-    status_keywords = ["show task", "list task", "task status", "assignments", "what tasks", "recent task"]
-    if any(keyword in msg_lower for keyword in status_keywords):
-        try:
-            tasks = Task.objects.all().order_by("-created_at")[:5]
-            if not tasks:
-                return {
-                    "type": "info",
-                    "response": "📋 There are currently no tasks in the system. Would you like to create one?"
-                }
-           
-            task_list = []
-            for t in tasks:
-                assignee = t.assigned_to.name if t.assigned_to else "Unassigned"
-                confidence = f" (Confidence: {t.confidence_score:.0%})" if t.confidence_score else ""
-                task_list.append(f"• **{t.title}** - {t.status.capitalize()}, {assignee}{confidence}")
-           
-            return {
-                "type": "task_list",
-                "response": f"📋 **Recent Tasks:**\n\n" + "\n".join(task_list) + f"\n\nTotal tasks: {Task.objects.count()}"
-            }
-        except Exception as e:
-            logger.error(f"Error fetching tasks: {e}")
-            return {
-                "type": "error",
-                "response": "I encountered an error while fetching tasks. Please try again."
-            }
-   
-    # --- Handle Employee/Team Queries ---
-    team_keywords = ["employee", "team", "staff", "who is", "team member", "workers"]
-    if any(keyword in msg_lower for keyword in team_keywords):
-        try:
-            employees = Employee.objects.all()[:10]
-            if not employees:
-                return {
-                    "type": "info",
-                    "response": "👥 There are no employees in the system yet."
-                }
-           
-            emp_list = []
-            for e in employees:
-                workload_emoji = "🟢" if e.workload_score < 0.5 else "🟡" if e.workload_score < 0.8 else "🔴"
-                emp_list.append(f"{workload_emoji} **{e.name}** ({e.role}) - Workload: {e.workload_score:.0%}")
-           
-            return {
-                "type": "employee_list",
-                "response": f"👥 **Team Members:**\n\n" + "\n".join(emp_list) + f"\n\nTotal employees: {Employee.objects.count()}"
-            }
-        except Exception as e:
-            logger.error(f"Error fetching employees: {e}")
-            return {
-                "type": "error",
-                "response": "I encountered an error while fetching employee information."
-            }
-   
-    # --- Handle System/How It Works Queries ---
-    if "how does" in msg_lower or "how do" in msg_lower or "explain" in msg_lower:
-        return {
-            "type": "explanation",
-            "response": "🧠 **How the AI Assignment System Works:**\n\n"
-                       "**Step 1: Task Parsing** 📝\n"
-                       "I analyze your task title and description to extract keywords, required skills, and technical tags.\n\n"
-                       "**Step 2: Role Matching** 🎯\n"
-                       "I find employees whose skills and responsibilities match the task requirements.\n\n"
-                       "**Step 3: Workload Analysis** ⚖️\n"
-                       "I check each candidate's current workload to ensure balanced distribution.\n\n"
-                       "**Step 4: Confidence Scoring** 💯\n"
-                       "Using AI, I calculate how confident I am that each person is the right fit.\n\n"
-                       "**Step 5: Decision** ✅\n"
-                       "If confidence is high (≥75%), I auto-assign. Otherwise, I recommend for your review.\n\n"
-                       "Plus, I send email notifications to assignees automatically!"
-        }
-   
-    # --- Use LLM for General Conversational Queries ---
-    llm = get_llm()
-    if llm:
-        try:
-            # Get context about system
-            task_count = Task.objects.count()
-            employee_count = Employee.objects.count()
-           
-            context = f"""You are an AI assistant for an intelligent task assignment system.
-
-System Overview:
-- Total Tasks: {task_count}
-- Total Employees: {employee_count}
-- Your role: Help users understand the system, answer questions, and guide them
-
-User Message: {message}
-
-Instructions:
-- Be helpful, friendly, and concise
-- If asked about the system, explain its AI-powered task assignment capabilities
-- If asked about specific tasks or employees, suggest they use specific queries
-- Keep responses under 150 words
-
-Respond naturally and helpfully."""
-           
-            result = llm.invoke(context)
-            return {
-                "type": "llm_response",
-                "response": result.content
-            }
-        except Exception as e:
-            logger.error(f"LLM failed for chat: {e}")
-            # Fall through to default
-   
-    # --- Default Fallback ---
-    return {
-        "type": "default",
-        "response": "I'm here to help with task assignments! 🤖\n\n"
-                   "You can:\n"
-                   "• Ask me 'help' to see what I can do\n"
-                   "• Ask about 'tasks' or 'employees'\n"
-                   "• Create a new task and I'll assign it intelligently\n\n"
-                   "What would you like to do?"
-    }

@@ -7,6 +7,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny
 
 from .ai_engine import run_assignment_pipeline
+from .utils import classify_message_openai
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -21,10 +25,20 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
 
     def create(self, request, *args, **kwargs):
+        message_content = request.data.get("title") or request.data.get("description") or ""
+        classification_result = classify_message_openai(message_content)
+
+        # If classification_result is a Response, it's non-task: return directly
+        if isinstance(classification_result, Response):
+            return classification_result
+
+        # Otherwise, it's a task -> save to DB
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
+        logger.info(f"Saved Task ID={task.id}, title={task.title}")
 
+        # Run assignment pipeline
         result = run_assignment_pipeline.delay(task.id).get(timeout=120)
 
         assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
@@ -35,8 +49,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             confidence = 0.0
         reason = result.get("reasoning", "No reasoning provided")
         breakdown = result.get("confidence_breakdown", [])
-        email_sent = result.get("email_sent", False)  # Add this
-        
+        email_sent = result.get("email_sent", False)
+
         return Response({
             "id": task.id,
             "title": task.title,
@@ -44,7 +58,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             "confidence_score": confidence,
             "assignment_reason": reason,
             "confidence_breakdown": breakdown,
-            "email_sent": email_sent,  # Add this
+            "email_sent": email_sent,
+            "type": "task",
         }, status=status.HTTP_201_CREATED)
 
 
