@@ -25,10 +25,14 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
 
-        result = run_assignment_pipeline.delay(task.id)
+        result = run_assignment_pipeline.delay(task.id).get(timeout=120)
 
         assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
-        confidence = task.confidence_score or result.get("confidence_score", 0.0)
+        raw_conf = result.get("confidence_score", 0.0)
+        try:
+            confidence = float(raw_conf)
+        except (TypeError, ValueError):
+            confidence = 0.0
         reason = result.get("reasoning", "No reasoning provided")
         breakdown = result.get("confidence_breakdown", [])
         email_sent = result.get("email_sent", False)  # Add this
@@ -43,9 +47,6 @@ class TaskViewSet(viewsets.ModelViewSet):
             "email_sent": email_sent,  # Add this
         }, status=status.HTTP_201_CREATED)
 
-
-
-    
 
     @action(detail=True, methods=["post"])
     def manual_assign(self, request, pk=None):
