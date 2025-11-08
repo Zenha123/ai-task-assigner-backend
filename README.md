@@ -34,15 +34,37 @@ It integrates **LangGraph, OpenAI, and Celery** to build an intelligent, asynchr
 | Email Notification     | SMTP (localhost)                              |
 
 ---
-## Access After Build:
+## 🐰 Development Setup (Manual Run)
 
+# Backend (Django):
+```
+git clone https://github.com/Zenha123/ai-task-assignment-system.git
+cd ai-task-assignment-system
+python -m venv env
+env\Scripts\activate       # Windows
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+# Frontend (React):
+```
+git clone [https://github.com/Zenha123/ai-task-assignment-system.git](https://github.com/Zenha123/ai-task-assigner-frontend.git)
+cd ai-task-assigner-frontend
+npm install
+npm run dev
+```
+
+## Access After Build:
+ ## 🌐 Local
 -Frontend: http://localhost:5173
 
 -Backend API: http://localhost:8000/api
 
 -Admin Panel: http://localhost:8000/admin
 
-⚛️ Frontend UI Overview
+
+## ⚛️ Frontend UI Overview
 
 💬 AI Chat Interface – Describe tasks in plain English
 
@@ -50,16 +72,12 @@ It integrates **LangGraph, OpenAI, and Celery** to build an intelligent, asynchr
 
 📧 Assignment Notifications – Sent automatically via SMTP
 
-🌐 Hosting
 
-Backend (Azure): https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net/api/
+## 🌐 Hosting
+
+Backend (Azure): https://ai-task-assigner-cfc8ewape0dmdmd2.westus-01.azurewebsites.net/api/schema/swagger-ui/
 
 Frontend (Vercel): https://ai-task-assigner-frontend.vercel.app/
-
-Database:
-
-Worker: Celery + Redis (Dockerized on Azure or local)
-
 
 ## ⚙️ Core Modules Overview
 
@@ -118,7 +136,7 @@ Worker: Celery + Redis (Dockerized on Azure or local)
 6. **Notification** – Sends assignment email with details (works on localhost via SMTP).  
 
 **Example AI Output:**
-
+```
 Task: Build a REST API in Django to manage project reports and store them in PostgreSQL
 AI Response:
 
@@ -133,22 +151,11 @@ Reason: Dhruv has relevant skills in Python, Django, and PostgreSQL.
 
 📧 Assignment email sent to dhruv.sharma@example.com
 
-
----
-
-## 🧵 Celery Integration (Async Task Processing)
-
-The system uses **Celery** for asynchronous execution of heavy AI tasks.  
-**Redis** is used as a broker to manage background queues.
-
-```bash
-# Start Celery worker
-celery -A backend worker -l info
-
-# Optional: run Celery Beat for periodic tasks
-celery -A backend beat -l info
 ```
+
 🐳 Docker Setup
 ```bash
 docker-compose up --build
+docker run
+docker start
 ```
