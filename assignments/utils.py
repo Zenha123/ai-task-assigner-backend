@@ -24,7 +24,6 @@ def handle_chat_message(message: str) -> Response:
 
     msg_lower = message.lower().strip()
 
-    # --- Handle Greetings ---
     greetings = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening", "greetings", "howdy"]
     if any(msg_lower.startswith(greeting) or msg_lower == greeting for greeting in greetings):
         return Response({
@@ -37,7 +36,7 @@ def handle_chat_message(message: str) -> Response:
                         "What would you like to do today?"
         })
 
-    # --- Handle Help Requests ---
+    
     help_keywords = ["help", "what can you do", "capabilities", "commands", "how to", "guide"]
     if any(keyword in msg_lower for keyword in help_keywords):
         return Response({
@@ -60,7 +59,7 @@ def handle_chat_message(message: str) -> Response:
                         "Just create a task or ask me anything!"
         })
 
-    # --- Handle Task/Assignment Status Queries ---
+   
     status_keywords = ["show task", "list task", "task status", "assignments", "what tasks", "recent task"]
     if any(keyword in msg_lower for keyword in status_keywords):
         try:
@@ -88,7 +87,7 @@ def handle_chat_message(message: str) -> Response:
                 "response": "I encountered an error while fetching tasks. Please try again."
             })
 
-    # --- Handle Employee/Team Queries ---
+   
     team_keywords = ["employee", "team", "staff", "who is", "team member", "workers"]
     if any(keyword in msg_lower for keyword in team_keywords):
         try:
@@ -115,7 +114,7 @@ def handle_chat_message(message: str) -> Response:
                 "response": "I encountered an error while fetching employee information."
             })
 
-    # --- Handle System/How It Works Queries ---
+    
     if "how does" in msg_lower or "how do" in msg_lower or "explain" in msg_lower:
         return Response({
             "type": "explanation",
@@ -133,7 +132,7 @@ def handle_chat_message(message: str) -> Response:
                         "Plus, I send email notifications to assignees automatically!"
         })
 
-    # --- Default Fallback ---
+    
     return Response({
         "type": "default",
         "response": "I'm here to help with task assignments! 🤖\n\n"
@@ -170,7 +169,7 @@ def classify_message_openai(message: str) -> dict:
 
         category = response.choices[0].message.content.strip().lower()
 
-        # Safety fallback
+       
         if category not in ["greeting", "help", "task", "unknown"]:
             category = "unknown"
 

@@ -15,8 +15,6 @@ def send_assignment_email(assignee_email: str, context: dict):
         subject = f"[Assignment] New Task: {context.get('task_title')}"
         from_email = settings.DEFAULT_FROM_EMAIL
         to = [assignee_email]
-
-        # Render plain text from template (fallback)
         text_content = render_to_string("assignments/email_assignment.txt", context)
         html_content = render_to_string("assignments/email_assignment.html", context)
 
@@ -24,11 +22,8 @@ def send_assignment_email(assignee_email: str, context: dict):
         msg.attach_alternative(html_content, "text/html")
         msg.send(fail_silently=False)
 
-        # ✅ Add this line below
+        
         print(f"✅ Assignment email sent to {assignee_email}")
-
-        # (Optional: keep logger also for file/debug logs)
-        # logger.info("✅ Assignment email sent to %s", assignee_email)
 
     except Exception as e:
         # Log and swallow to avoid breaking main flow

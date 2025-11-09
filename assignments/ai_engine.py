@@ -21,17 +21,13 @@ def get_llm():
     print(f"✅ Using OpenAI API key (starts with {api_key[:7]}...)")
     return ChatOpenAI(model="gpt-4o-mini", temperature=0.3, api_key=api_key)
 
-
-
-# ---------- Pipeline Nodes ----------
-#
 import re
 
 def task_parser_node(task: Task) -> Dict[str, Any]:
     """Extract candidate skills/keywords from the task title & description."""
     llm = get_llm()
     if not llm:
-        # fallback if no key or offline
+      
         keywords = (task.title + " " + task.description).lower().split()[:10]
         return {"keywords": keywords, "skills": [], "technical_tags": [], "effort_level": "medium"}
 
@@ -108,7 +104,6 @@ def confidence_scorer_node(task: Task, candidate_info: List[Dict[str, Any]]) -> 
         emp = info["employee"]
 
         if not llm:
-            # fallback if no API key / offline mode
             conf = float(min(1.0, info["adjusted_score"]))
             reason = "Heuristic confidence (no LLM)."
         else:
@@ -126,11 +121,9 @@ def confidence_scorer_node(task: Task, candidate_info: List[Dict[str, Any]]) -> 
                 result = llm.invoke(prompt)
                 print("🧠 ConfidenceScorer raw output:", result.content)
 
-                # --- Try normal JSON parsing first ---
                 try:
                     parsed = json.loads(result.content)
                 except Exception:
-                    # --- If model returns text, extract JSON with regex fallback ---
                     import re
                     json_match = re.search(r'\{.*\}', result.content, re.S)
                     if json_match:
@@ -184,10 +177,8 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
         )
         logger.info(f"[Decision] Auto-assigned to {emp.name} (confidence {conf:.2f})")
 
-        # Import inside function to avoid circular import issues
         from .notifications import send_assignment_email
 
-        # Prepare email context for template rendering
         context = {
             "assignee_name": emp.name,
             "task_title": task.title,
@@ -202,10 +193,9 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
             ],
         }
 
-        # Send the actual email
         try:
             send_assignment_email(emp.email, context)
-            email_sent = True  # Mark as sent if successful
+            email_sent = True  
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
             email_sent = False
@@ -215,7 +205,7 @@ def decision_node(task: Task, scored: List[Dict[str, Any]], threshold: float = 0
         "assignee": emp.name,
         "confidence": conf,
         "reason": reason,
-        "email_sent": email_sent  # Add this to return value
+        "email_sent": email_sent  
     }
 
 
@@ -229,10 +219,7 @@ def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
     task = Task.objects.get(pk=task_id)
     logger.info(f"🔹 Running AI assignment pipeline for Task ID={task.id}")
 
-    # Step 1: Parse the task
     parsed = task_parser_node(task)
-
-    # Step 2: Find matching candidates
     candidates = role_matching_node(parsed)
     if not candidates:
         return {
@@ -241,19 +228,12 @@ def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
             "confidence_score": 0.0,
             "reasoning": "No candidates matched.",
             "confidence_breakdown": [],
-            "email_sent": False  # Add this
+            "email_sent": False  
         }
 
-    # Step 3: Analyze workload
     candidate_info = workload_analyzer_node(candidates)
-
-    # Step 4: Score confidence for each candidate
     scored = confidence_scorer_node(task, candidate_info)
-
-    # Step 5: Make decision
     decision = decision_node(task, scored, threshold)
-
-    # Build breakdown for chatbot UI
     breakdown = [
         {
             "name": s["employee"].name,
@@ -263,17 +243,14 @@ def run_assignment_pipeline(task_id: int, threshold: float = 0.75) -> dict:
         for s in scored
     ]
 
-    # Build the final result payload
     result = {
         "task": task.title,
         "recommended_assignee": decision.get("assignee") or None,
         "confidence_score": float(task.confidence_score or 0.0),
         "reasoning": decision.get("reason", "See AssignmentLog."),
         "confidence_breakdown": breakdown,
-        "email_sent": decision.get("email_sent", False)  # Add this
+        "email_sent": decision.get("email_sent", False)  
     }
-
-    # Log the confidence breakdown in terminal (for better debugging)
     logger.info("🧠 Confidence Breakdown:")
     for b in breakdown:
         logger.info(f"• {b['name']}: {b['confidence']*100:.1f}% — {b['reason']}")

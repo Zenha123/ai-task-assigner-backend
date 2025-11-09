@@ -165,9 +165,14 @@ CELERY_TASK_QUEUES = {
     "assignment_queue": {
         "exchange": "assignment",
         "routing_key": "assignment",
-        "queue_arguments": {"x-max-length": 1}
+        "queue_arguments": {"x-max-length": 1},
     }
 }
+
+CELERY_TASK_ROUTES = {
+    "assignments.ai_engine.run_assignment_pipeline": {"queue": "assignment_queue"},
+}
+
 
 # Celery Configuration
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")

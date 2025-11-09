@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Optional: extend user to have role/skills/workload
+
 class Employee(models.Model):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=200)
-    skills = models.JSONField(default=list)  # list of strings
+    skills = models.JSONField(default=list)  
     responsibilities = models.TextField(blank=True)
-    workload_score = models.FloatField(default=0.0)  # lower = less busy
+    workload_score = models.FloatField(default=0.0) 
 
     def __str__(self):
         return f"{self.name} ({self.role})"
@@ -35,7 +35,7 @@ class AssignmentLog(models.Model):
     reasoning_text = models.TextField()
     confidence = models.FloatField()
     reviewed_by = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.SET_NULL)
-    decision_status = models.CharField(max_length=50)  # e.g. "auto_assigned", "manager_approved"
+    decision_status = models.CharField(max_length=50)  
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

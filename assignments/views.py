@@ -28,19 +28,15 @@ class TaskViewSet(viewsets.ModelViewSet):
         message_content = request.data.get("title") or request.data.get("description") or ""
         classification_result = classify_message_openai(message_content)
 
-        # If classification_result is a Response, it's non-task: return directly
+       
         if isinstance(classification_result, Response):
             return classification_result
 
-        # Otherwise, it's a task -> save to DB
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         task = serializer.save()
         logger.info(f"Saved Task ID={task.id}, title={task.title}")
-
-        # Run assignment pipeline
         result = run_assignment_pipeline.delay(task.id).get(timeout=120)
-
         assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
         raw_conf = result.get("confidence_score", 0.0)
         try:
