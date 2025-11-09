@@ -161,6 +161,13 @@ SPECTACULAR_SETTINGS = {
     "SECURITY": [{"BearerAuth": []}],
 }
 
+CELERY_TASK_QUEUES = {
+    "assignment_queue": {
+        "exchange": "assignment",
+        "routing_key": "assignment",
+        "queue_arguments": {"x-max-length": 1}
+    }
+}
 
 # Celery Configuration
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
