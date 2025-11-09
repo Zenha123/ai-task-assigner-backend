@@ -39,7 +39,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         logger.info(f"Saved Task ID={task.id}, title={task.title}")
 
         # Run assignment pipeline
-        result = run_assignment_pipeline.delay(task.id).get(timeout=600)
+        result = run_assignment_pipeline.delay(task.id).get(timeout=120)
 
         assigned_to = task.assigned_to.name if task.assigned_to else result.get("recommended_assignee")
         raw_conf = result.get("confidence_score", 0.0)
